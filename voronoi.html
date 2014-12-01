@@ -1,0 +1,105 @@
+<html>
+  <head>
+    <title>Voronoi Diagram</title>
+    <meta content="">
+    <style></style>
+  </head>
+  <body>
+	<canvas id="diagram_canvas" width="300" height="200" style="border:1px solid #000000;">
+	</canvas>
+	<canvas id="diagram_canvas2" width="300" height="200" style="border:1px solid #000000;">
+	</canvas>
+	<script>
+		var squaredEuclideanDistance = function(p1, p2) {
+			return Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2);
+		}
+		
+		// https://gist.github.com/robertknight/5410420
+		var vecDotProduct = function(vecA, vecB) {
+			var product = 0;
+			for (var i = 0; i < vecA.length; i++) {
+				product += vecA[i] * vecB[i];
+			}
+			return product;
+		}
+		 
+		var vecMagnitude = function(vec) {
+			var sum = 0;
+			for (var i = 0; i < vec.length; i++) {
+				sum += vec[i] * vec[i];
+			}
+			return Math.sqrt(sum);
+		}
+		 
+		var cosineSimilarity = function(vecA, vecB) {
+			return vecDotProduct(vecA, vecB) / (vecMagnitude(vecA) * vecMagnitude(vecB));
+		}
+		
+		var findNearestSite = function(point, sites, distanceFunction) {
+			distance = distanceFunction(point, sites[0]);
+			site = 0; 
+			for (var i = 1; i < sites.length; i++) {
+				var d = distanceFunction(point, sites[i]);
+				if (d < distance) {
+					distance = d;
+					site = i;
+				}
+			}
+			return site;
+		}
+		
+		//http://jsperf.com/setting-canvas-pixel
+		var drawVoronoi = function(canvas, sites, colors, distanceFunction) { 
+			
+			var ctx = canvas.getContext("2d");
+			var image_data = ctx.createImageData(1,1); // only do this once per page
+			var d  = image_data.data;
+			
+			
+			
+			d[3]   = 255;
+			for (var x = 0; x < canvas.width; x++) {
+				for (var y = 0; y < canvas.height; y++) {
+					var site = findNearestSite([x,y], sites, distanceFunction);
+					var c = colors[site];
+					
+					d[0]   = c[0];
+					d[1]   = c[1];
+					d[2]   = c[2];
+					//d[3]   = 255;
+					ctx.putImageData(image_data, x, canvas.height - y - 1);
+				}
+			}
+			
+			d[0]   = 0;
+			d[1]   = 0;
+			d[2]   = 0;
+			for (var i = 0; i < sites.length; i++) {
+				ctx.putImageData(image_data, sites[i][0], canvas.height - sites[i][1] - 1);
+			}
+			
+			console.log('Done !');
+		}
+		
+		
+		colors = [
+			[255, 0, 0, 255],
+			[0, 255, 0, 255],
+			[0, 0, 255, 255],
+			[0, 255, 255, 255],
+			[255, 0, 255, 255],
+			[255, 255, 0, 255]
+		];
+		sites = [
+			[50, 50],
+			[60, 150],
+			[160,40],
+			//[190,130]
+		];
+		var canvas = document.getElementById("diagram_canvas");
+		drawVoronoi(canvas, sites, colors, squaredEuclideanDistance);
+		var canvas = document.getElementById("diagram_canvas2");
+		drawVoronoi(canvas, sites, colors, cosineSimilarity);
+	</script>
+  </body>
+</html>
