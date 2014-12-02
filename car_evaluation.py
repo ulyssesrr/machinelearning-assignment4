@@ -51,24 +51,24 @@ for calibration_indexes, test_indexes in kf:
 	calibration_dataset = dataset[calibration_indexes]
 	subkf = StratifiedKFold(calibration_target, n_folds=2)
 	best_accuracy =  -1
-	for train_indexes, validation_indexes in subkf:
-		for k in range(1,21):
-			#print("Tamanho Treino/Teste: %d/%d" % (len(train_indexes), len(test_indexes)))
-			knn = KNeighborsClassifier(n_neighbors=k)
-			knn.fit(calibration_dataset[train_indexes], calibration_target[train_indexes])
-			target_pred_train = knn.predict(calibration_dataset[train_indexes])
-			target_pred_validation = knn.predict(calibration_dataset[validation_indexes])
-			accuracy_train = accuracy_score(calibration_target[train_indexes], target_pred_train)
-			accuracy_validation = accuracy_score(calibration_target[validation_indexes], target_pred_validation)
-			precision_macro_averaged_train = precision_score(calibration_target[train_indexes], target_pred_train, labels=np.unique(target), average='macro')
-			precision_macro_averaged_validation = precision_score(calibration_target[validation_indexes], target_pred_validation, labels=np.unique(target), average='macro')
-			recall_macro_averaged_train = recall_score(calibration_target[train_indexes], target_pred_train, labels=np.unique(target), average='macro')
-			recall_macro_averaged_validation = recall_score(calibration_target[validation_indexes], target_pred_validation, labels=np.unique(target), average='macro')
-			if accuracy_validation > best_accuracy:
-				best_k = k
-				best_accuracy = accuracy_validation
-			print("kNN: k: %d\n|-Acurácia (Treino/Validação): %0.2f/%0.2f\n|-Macro-precision Médio (Treino/Validação): %0.2f/%0.2f\n|-Macro-recall Médio (Treino/Validação): %0.2f/%0.2f" % (k, accuracy_train, accuracy_validation, precision_macro_averaged_train, precision_macro_averaged_validation,recall_macro_averaged_train,recall_macro_averaged_validation))
-		print("Melhor: k: %d - Acurácia (Validação): %0.2f\n" % (best_k, best_accuracy))
+	train_indexes, validation_indexes = next(iter(subkf))
+	for k in range(1,21):
+		#print("Tamanho Treino/Teste: %d/%d" % (len(train_indexes), len(test_indexes)))
+		knn = KNeighborsClassifier(n_neighbors=k)
+		knn.fit(calibration_dataset[train_indexes], calibration_target[train_indexes])
+		target_pred_train = knn.predict(calibration_dataset[train_indexes])
+		target_pred_validation = knn.predict(calibration_dataset[validation_indexes])
+		accuracy_train = accuracy_score(calibration_target[train_indexes], target_pred_train)
+		accuracy_validation = accuracy_score(calibration_target[validation_indexes], target_pred_validation)
+		precision_macro_averaged_train = precision_score(calibration_target[train_indexes], target_pred_train, labels=np.unique(target), average='macro')
+		precision_macro_averaged_validation = precision_score(calibration_target[validation_indexes], target_pred_validation, labels=np.unique(target), average='macro')
+		recall_macro_averaged_train = recall_score(calibration_target[train_indexes], target_pred_train, labels=np.unique(target), average='macro')
+		recall_macro_averaged_validation = recall_score(calibration_target[validation_indexes], target_pred_validation, labels=np.unique(target), average='macro')
+		if accuracy_validation > best_accuracy:
+			best_k = k
+			best_accuracy = accuracy_validation
+		print("kNN: k: %d\n|-Acurácia (Treino/Validação): %0.2f/%0.2f\n|-Macro-precision Médio (Treino/Validação): %0.2f/%0.2f\n|-Macro-recall Médio (Treino/Validação): %0.2f/%0.2f" % (k, accuracy_train, accuracy_validation, precision_macro_averaged_train, precision_macro_averaged_validation,recall_macro_averaged_train,recall_macro_averaged_validation))
+	print("Melhor: k: %d - Acurácia (Validação): %0.2f\n" % (best_k, best_accuracy))
 			
 knn = KNeighborsClassifier(n_neighbors=1)
 knn.fit(dataset, target)
