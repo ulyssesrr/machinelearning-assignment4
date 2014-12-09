@@ -32,7 +32,7 @@
 		}
 		 
 		var cosineSimilarity = function(vecA, vecB) {
-			return vecDotProduct(vecA, vecB) / (vecMagnitude(vecA) * vecMagnitude(vecB));
+			return -1*vecDotProduct(vecA, vecB) / (vecMagnitude(vecA) * vecMagnitude(vecB));
 		}
 		
 		var findNearestSite = function(point, sites, distanceFunction) {
