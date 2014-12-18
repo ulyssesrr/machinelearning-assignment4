@@ -67,11 +67,6 @@ for calibration_indexes, test_indexes in kf:
 		if accuracy_validation > best_accuracy:
 			best_k = k
 			best_accuracy = accuracy_validation
-		print("kNN: k: %d\n|-Acurácia (Treino/Validação): %0.2f/%0.2f\n|-Macro-precision Médio (Treino/Validação): %0.2f/%0.2f\n|-Macro-recall Médio (Treino/Validação): %0.2f/%0.2f" % (k, accuracy_train, accuracy_validation, precision_macro_averaged_train, precision_macro_averaged_validation,recall_macro_averaged_train,recall_macro_averaged_validation))
-	print("Melhor: k: %d - Acurácia (Validação): %0.2f\n" % (best_k, best_accuracy))
+		print("kNN: k: %d\n|-Acurácia (Treino/Validação): %2.2f%%\/%2.2f%%\n|-Macro-precision Médio (Treino/Validação): %2.2f%%/%2.2f%%\n|-Macro-recall Médio (Treino/Validação): %2.2f%%/%2.2f%%" % (k, accuracy_train*100, accuracy_validation*100, precision_macro_averaged_train*100, precision_macro_averaged_validation*100,recall_macro_averaged_train*100,recall_macro_averaged_validation*100))
+	print("Melhor: k: %d - Acurácia (Validação): %2.2f%%\n" % (best_k, best_accuracy*100))
 			
-knn = KNeighborsClassifier(n_neighbors=1)
-knn.fit(dataset, target)
- 
-print(knn.predict(dataset))
-print(knn.predict([dataset[-1]]))
